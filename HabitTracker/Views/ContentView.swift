@@ -23,14 +23,23 @@ struct ContentView: View {
                         Button {
                             viewModel.toggleToday(for: habit, context: context)
                         } label: {
-                            HStack {
+                            HStack(spacing: 12) {
                                 Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
+                                    .font(.title2)
                                     .foregroundStyle(habit.isCompletedToday ? .green : .secondary)
 
-                                Text(habit.name)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(habit.name)
+                                        .font(.headline)
+
+                                    Text("Streak: \(habit.currentStreak) dagar")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
 
                                 Spacer()
                             }
+                            .padding(.vertical, 4)
                         }
                         .buttonStyle(.plain)
                     }
