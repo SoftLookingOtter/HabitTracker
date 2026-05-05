@@ -13,7 +13,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-
                 LinearGradient(
                     colors: [
                         Color.green.opacity(0.15),
@@ -26,7 +25,6 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
                 VStack(spacing: 16) {
-
                     Text("Mina vanor")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -59,17 +57,14 @@ struct ContentView: View {
                         List {
                             ForEach(habits) { habit in
                                 Button {
-                                    viewModel.toggleToday(for: habit, context: context)
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.55)) {
+                                        viewModel.toggleToday(for: habit, context: context)
+                                    }
                                 } label: {
                                     HStack(spacing: 14) {
-
                                         Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
                                             .font(.title)
-                                            .foregroundStyle(
-                                                habit.isCompletedToday
-                                                ? LinearGradient(colors: [.green, .mint], startPoint: .top, endPoint: .bottom)
-                                                : .secondary
-                                            )
+                                            .foregroundStyle(habit.isCompletedToday ? .green : .secondary)
 
                                         VStack(alignment: .leading, spacing: 6) {
                                             Text(habit.name)
@@ -91,8 +86,13 @@ struct ContentView: View {
                                                 : Color.gray.opacity(0.1)
                                             )
                                             .clipShape(Capsule())
-                                            .foregroundStyle(
-                                                habit.currentStreak > 0 ? .orange : .secondary
+                                            .foregroundStyle(habit.currentStreak > 0 ? .orange : .secondary)
+                                            .scaleEffect(habit.isCompletedToday ? 1.08 : 1.0)
+                                            .shadow(
+                                                color: habit.currentStreak > 0 ? Color.orange.opacity(0.35) : Color.clear,
+                                                radius: habit.currentStreak > 0 ? 8 : 0,
+                                                x: 0,
+                                                y: 0
                                             )
                                         }
 
