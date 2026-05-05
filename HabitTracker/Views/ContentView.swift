@@ -61,6 +61,19 @@ struct ContentView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                   
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                let habit = habits[index]
+                                context.delete(habit)
+                            }
+
+                            do {
+                                try context.save()
+                            } catch {
+                                viewModel.errorMessage = "Kunde inte radera vanan."
+                            }
+                        }
                     }
                 }
                 .listStyle(.plain)
