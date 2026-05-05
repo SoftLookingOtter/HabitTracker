@@ -10,24 +10,47 @@ struct AddHabitView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                Text("Lägg till vana")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 32)
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.green.opacity(0.15),
+                        Color.orange.opacity(0.15),
+                        Color.clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(spacing: 24) {
                     Text("Ny vana")
-                        .font(.headline)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 16)
 
-                    TextField("Till exempel: Dricka vatten", text: $habitName)
-                        .textFieldStyle(.roundedBorder)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Vad vill du börja med?")
+                            .font(.headline)
+
+                        TextField("Till exempel: Dricka vatten", text: $habitName)
+                            .textFieldStyle(.plain)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        Text("Tips: välj något enkelt som du kan göra varje dag.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding()
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    .padding(.horizontal)
+
+                    Spacer()
                 }
-                .padding(.horizontal)
-
-                Spacer()
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

@@ -12,71 +12,117 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
+            ZStack {
 
-                Text("Mina vanor")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 16)
+                LinearGradient(
+                    colors: [
+                        Color.green.opacity(0.15),
+                        Color.orange.opacity(0.15),
+                        Color.clear
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
-                List {
+                VStack(spacing: 16) {
+
+                    Text("Mina vanor")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 16)
+
                     if habits.isEmpty {
                         VStack(spacing: 12) {
-                            Image(systemName: "leaf")
-                                .font(.largeTitle)
+                            Image(systemName: "leaf.fill")
+                                .font(.system(size: 48))
                                 .foregroundStyle(.green)
 
                             Text("Inga vanor än")
                                 .font(.headline)
 
                             Text("Lägg till din första vana för att börja bygga en streak.")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
                         }
+                        .padding(24)
                         .frame(maxWidth: .infinity)
-                        .padding(.top, 40)
+                        .background(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.horizontal)
+
+                        Spacer()
                     } else {
-                        ForEach(habits) { habit in
-                            Button {
-                                viewModel.toggleToday(for: habit, context: context)
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
-                                        .font(.title2)
-                                        .foregroundStyle(habit.isCompletedToday ? .green : .secondary)
+                        List {
+                            ForEach(habits) { habit in
+                                Button {
+                                    viewModel.toggleToday(for: habit, context: context)
+                                } label: {
+                                    HStack(spacing: 14) {
 
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(habit.name)
-                                            .font(.headline)
+                                        Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
+                                            .font(.title)
+                                            .foregroundStyle(
+                                                habit.isCompletedToday
+                                                ? LinearGradient(colors: [.green, .mint], startPoint: .top, endPoint: .bottom)
+                                                : .secondary
+                                            )
 
-                                        Text("Streak: \(habit.currentStreak) dagar")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text(habit.name)
+                                                .font(.headline)
+
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "flame.fill")
+                                                    .font(.caption)
+
+                                                Text("\(habit.currentStreak)")
+                                                    .font(.caption)
+                                                    .fontWeight(.semibold)
+                                            }
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(
+                                                habit.currentStreak > 0
+                                                ? Color.orange.opacity(0.2)
+                                                : Color.gray.opacity(0.1)
+                                            )
+                                            .clipShape(Capsule())
+                                            .foregroundStyle(
+                                                habit.currentStreak > 0 ? .orange : .secondary
+                                            )
+                                        }
+
+                                        Spacer()
                                     }
-
-                                    Spacer()
+                                    .padding()
+                                    .background(.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                                 }
-                                .padding(.vertical, 4)
+                                .buttonStyle(.plain)
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
                             }
-                            .buttonStyle(.plain)
-                        }
-                   
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                let habit = habits[index]
-                                context.delete(habit)
-                            }
+                            .onDelete { indexSet in
+                                for index in indexSet {
+                                    context.delete(habits[index])
+                                }
 
-                            do {
-                                try context.save()
-                            } catch {
-                                viewModel.errorMessage = "Kunde inte radera vanan."
+                                do {
+                                    try context.save()
+                                } catch {
+                                    viewModel.errorMessage = "Kunde inte radera vanan."
+                                }
                             }
                         }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
                 }
-                .listStyle(.plain)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
