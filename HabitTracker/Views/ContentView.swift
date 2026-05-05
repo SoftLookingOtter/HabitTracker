@@ -20,7 +20,19 @@ struct ContentView: View {
                     )
                 } else {
                     ForEach(habits) { habit in
-                        Text(habit.name)
+                        Button {
+                            viewModel.toggleToday(for: habit, context: context)
+                        } label: {
+                            HStack {
+                                Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(habit.isCompletedToday ? .green : .secondary)
+
+                                Text(habit.name)
+
+                                Spacer()
+                            }
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
