@@ -30,8 +30,13 @@ struct AddHabitView: View {
                         .padding(.top, 16)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Vad vill du börja med?")
-                            .font(.headline)
+                        HStack(spacing: 8) {
+                            Image(systemName: "sparkles")
+                                .foregroundStyle(.orange)
+
+                            Text("Vad vill du börja med?")
+                                .font(.headline)
+                        }
 
                         TextField("Till exempel: Dricka vatten", text: $habitName)
                             .textFieldStyle(.plain)
@@ -46,7 +51,7 @@ struct AddHabitView: View {
                     .padding()
                     .background(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 18))
-                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    .shadow(color: .orange.opacity(0.12), radius: 8, x: 0, y: 3)
                     .padding(.horizontal)
 
                     Spacer()
