@@ -10,12 +10,25 @@ struct AddHabitView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Ny vana") {
+            VStack(spacing: 24) {
+                Text("Lägg till vana")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 32)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Ny vana")
+                        .font(.headline)
+
                     TextField("Till exempel: Dricka vatten", text: $habitName)
+                        .textFieldStyle(.roundedBorder)
                 }
+                .padding(.horizontal)
+
+                Spacer()
             }
-            .navigationTitle("Lägg till vana")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Avbryt") {
