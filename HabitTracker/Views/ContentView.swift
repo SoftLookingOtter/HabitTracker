@@ -4,7 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var context
 
-    @Query private var habits: [Habit]
+    @Query(sort: \Habit.createdAt, order: .reverse) private var habits: [Habit]
 
     @State private var viewModel = HabitViewModel()
     @State private var showingAddHabit = false
@@ -45,7 +45,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("Habit Tracker")
+            .navigationTitle("Mina vanor")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
