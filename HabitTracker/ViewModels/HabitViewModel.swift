@@ -23,17 +23,15 @@ class HabitViewModel {
             errorMessage = "Kunde inte spara vanan: \(error.localizedDescription)"
         }
     }
-    
+
     func toggleToday(for habit: Habit, context: ModelContext) {
         let calendar = Calendar.current
 
         if let index = habit.completedDates.firstIndex(where: {
             calendar.isDateInToday($0)
         }) {
-            // redan klar idag → ta bort
             habit.completedDates.remove(at: index)
         } else {
-            // inte klar → lägg till idag
             habit.completedDates.append(Date())
         }
 
@@ -43,6 +41,20 @@ class HabitViewModel {
             errorMessage = "Kunde inte spara ändringen: \(error.localizedDescription)"
         }
     }
+
+    func deleteHabits(
+        at offsets: IndexSet,
+        from habits: [Habit],
+        context: ModelContext
+    ) {
+        for index in offsets {
+            context.delete(habits[index])
+        }
+
+        do {
+            try context.save()
+        } catch {
+            errorMessage = "Kunde inte radera vanan."
+        }
+    }
 }
-
-

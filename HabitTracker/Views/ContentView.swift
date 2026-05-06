@@ -63,15 +63,11 @@ struct ContentView: View {
                                 .listRowBackground(Color.clear)
                             }
                             .onDelete { indexSet in
-                                for index in indexSet {
-                                    context.delete(habits[index])
-                                }
-
-                                do {
-                                    try context.save()
-                                } catch {
-                                    viewModel.errorMessage = "Kunde inte radera vanan."
-                                }
+                                viewModel.deleteHabits(
+                                    at: indexSet,
+                                    from: habits,
+                                    context: context
+                                )
                             }
                         }
                         .listStyle(.plain)
