@@ -19,35 +19,41 @@ A modern SwiftUI habit tracking app built as a final project for iOS development
 - SwiftData
 - MVVM Architecture
 - SwiftUI Charts
-- Observation Framework (@Observable / @Bindable)
+- Observation Framework (`@Observable` / `@Bindable`)
 
 ## Project Structure
 
-HabitTracker-SaraLinden
+```text
+HabitTracker
 │
-├── Models/
-│ └── Habit.swift
+├── Models
+│   └── Habit.swift
 │
-├── Views/
-│ ├── ContentView.swift
-│ ├── HabitRowView.swift
-│ ├── AddHabitView.swift
-│ └── StatisticsView.swift
+├── Views
+│   ├── ContentView.swift
+│   ├── HabitRowView.swift
+│   ├── AddHabitView.swift
+│   └── StatisticsView.swift
 │
-├── ViewModels/
-│ └── HabitViewModel.swift
+├── ViewModels
+│   └── HabitViewModel.swift
+```
 
 ## Functionality
 
 ### Habits
+
 Users can:
+
 - Add habits
 - Mark habits as completed
 - Track current streaks
 - Remove habits
 
 ### Statistics
+
 The statistics screen displays:
+
 - Total habits
 - Total completions
 - Best streak
@@ -61,6 +67,7 @@ All habits remain saved even after the app is closed.
 ## Architecture
 
 The app follows the MVVM pattern:
+
 - Models handle data
 - ViewModels handle logic
 - Views handle UI
