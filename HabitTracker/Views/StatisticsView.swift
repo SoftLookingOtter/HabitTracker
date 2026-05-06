@@ -46,6 +46,10 @@ struct StatisticsView: View {
         habits.map(\.currentStreak).max() ?? 0
     }
 
+    private var topHabit: Habit? {
+        habits.max(by: { $0.currentStreak < $1.currentStreak })
+    }
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -59,39 +63,63 @@ struct StatisticsView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 20) {
-                Text("Statistik")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 16)
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Statistik")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 16)
 
-                VStack(spacing: 12) {
-                    StatCardView(title: "Antal vanor", value: "\(totalHabits)", systemImage: "list.bullet")
-                    StatCardView(title: "Totala avklarningar", value: "\(totalCompletions)", systemImage: "checkmark.circle")
-                    StatCardView(title: "Bästa streak", value: "\(bestStreak) dagar", systemImage: "flame")
-                }
-                .padding(.horizontal)
-
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Senaste 7 dagarna")
-                        .font(.headline)
-
-                    Chart(weeklyData) { item in
-                        BarMark(
-                            x: .value("Dag", item.date, unit: .day),
-                            y: .value("Antal", item.count)
+                    VStack(spacing: 12) {
+                        StatCardView(
+                            title: "Antal vanor",
+                            value: "\(totalHabits)",
+                            systemImage: "list.bullet"
                         )
-                    }
-                    .frame(height: 220)
-                }
-                .padding()
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 18))
-                .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-                .padding(.horizontal)
 
-                Spacer()
+                        StatCardView(
+                            title: "Totala avklarningar",
+                            value: "\(totalCompletions)",
+                            systemImage: "checkmark.circle"
+                        )
+
+                        StatCardView(
+                            title: "Bästa streak",
+                            value: "\(bestStreak) dagar",
+                            systemImage: "flame"
+                        )
+
+                        if let topHabit {
+                            StatCardView(
+                                title: "Top Habit",
+                                value: "\(topHabit.name) • \(topHabit.currentStreak) dagar",
+                                systemImage: "flame.fill"
+                            )
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Senaste 7 dagarna")
+                            .font(.headline)
+
+                        Chart(weeklyData) { item in
+                            BarMark(
+                                x: .value("Dag", item.date, unit: .day),
+                                y: .value("Antal", item.count)
+                            )
+                        }
+                        .frame(height: 220)
+                    }
+                    .padding()
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    .padding(.horizontal)
+
+                    Spacer(minLength: 24)
+                }
             }
         }
     }
@@ -111,14 +139,17 @@ struct StatCardView: View {
                 .background(Color.orange.opacity(0.15))
                 .clipShape(Circle())
 
-            Text(title)
-                .font(.headline)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+
+                Text(value)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
 
             Spacer()
-
-            Text(value)
-                .font(.headline)
-                .foregroundStyle(.secondary)
         }
         .padding()
         .background(.white)
