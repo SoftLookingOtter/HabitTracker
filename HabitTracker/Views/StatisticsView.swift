@@ -4,6 +4,7 @@ import Charts
 struct HabitCompletionData: Identifiable {
     let id = UUID()
     let date: Date
+    let habitName: String
     let count: Int
 }
 
@@ -14,22 +15,37 @@ struct StatisticsView: View {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        return (0..<7).compactMap { offset in
+        return (0..<7).reversed().flatMap { offset in
             guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else {
-                return nil
+                return [] as [HabitCompletionData]
             }
 
-            let count = habits.reduce(0) { total, habit in
+            if habits.isEmpty {
+                return [
+                    HabitCompletionData(
+                        date: date,
+                        habitName: "Inga vanor",
+                        count: 0
+                    )
+                ]
+            }
+
+            return habits.map { habit in
                 let completedThatDay = habit.completedDates.contains { completedDate in
                     calendar.isDate(completedDate, inSameDayAs: date)
                 }
 
-                return total + (completedThatDay ? 1 : 0)
+                return HabitCompletionData(
+                    date: date,
+                    habitName: habit.name,
+                    count: completedThatDay ? 1 : 0
+                )
             }
-
-            return HabitCompletionData(date: date, count: count)
         }
-        .reversed()
+    }
+
+    private var hasChartData: Bool {
+        weeklyData.contains { $0.count > 0 }
     }
 
     private var totalHabits: Int {
@@ -101,16 +117,47 @@ struct StatisticsView: View {
                     .padding(.horizontal)
 
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Senaste 7 dagarna")
+                        Text("Vanor senaste 7 dagarna")
                             .font(.headline)
 
-                        Chart(weeklyData) { item in
-                            BarMark(
-                                x: .value("Dag", item.date, unit: .day),
-                                y: .value("Antal", item.count)
-                            )
+                        if hasChartData {
+                            Chart(weeklyData) { item in
+                                BarMark(
+                                    x: .value("Dag", item.date, unit: .day),
+                                    y: .value("Antal", item.count)
+                                )
+                                .foregroundStyle(by: .value("Vana", item.habitName))
+                                .position(by: .value("Vana", item.habitName))
+                            }
+                            .frame(height: 240)
+                            .chartXAxis {
+                                AxisMarks(values: .stride(by: .day)) { _ in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                                }
+                            }
+                            .chartLegend(position: .bottom)
+                        } else {
+                            Chart(weeklyData) { item in
+                                BarMark(
+                                    x: .value("Dag", item.date, unit: .day),
+                                    y: .value("Antal", item.count)
+                                )
+                            }
+                            .frame(height: 240)
+                            .chartXAxis {
+                                AxisMarks(values: .stride(by: .day)) { _ in
+                                    AxisGridLine()
+                                    AxisTick()
+                                    AxisValueLabel(format: .dateTime.weekday(.abbreviated))
+                                }
+                            }
+
+                            Text("Ingen historik ännu. Markera några vanor som utförda för att se statistik.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
-                        .frame(height: 220)
                     }
                     .padding()
                     .background(.white)
