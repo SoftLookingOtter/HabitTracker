@@ -1,0 +1,128 @@
+import SwiftUI
+import Charts
+
+struct HabitCompletionData: Identifiable {
+    let id = UUID()
+    let date: Date
+    let count: Int
+}
+
+struct StatisticsView: View {
+    let habits: [Habit]
+
+    private var weeklyData: [HabitCompletionData] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        return (0..<7).compactMap { offset in
+            guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else {
+                return nil
+            }
+
+            let count = habits.reduce(0) { total, habit in
+                let completedThatDay = habit.completedDates.contains { completedDate in
+                    calendar.isDate(completedDate, inSameDayAs: date)
+                }
+
+                return total + (completedThatDay ? 1 : 0)
+            }
+
+            return HabitCompletionData(date: date, count: count)
+        }
+        .reversed()
+    }
+
+    private var totalHabits: Int {
+        habits.count
+    }
+
+    private var totalCompletions: Int {
+        habits.reduce(0) { total, habit in
+            total + habit.completedDates.count
+        }
+    }
+
+    private var bestStreak: Int {
+        habits.map(\.currentStreak).max() ?? 0
+    }
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color.green.opacity(0.15),
+                    Color.orange.opacity(0.15),
+                    Color.clear
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Text("Statistik")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 16)
+
+                VStack(spacing: 12) {
+                    StatCardView(title: "Antal vanor", value: "\(totalHabits)", systemImage: "list.bullet")
+                    StatCardView(title: "Totala avklarningar", value: "\(totalCompletions)", systemImage: "checkmark.circle")
+                    StatCardView(title: "Bästa streak", value: "\(bestStreak) dagar", systemImage: "flame")
+                }
+                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Senaste 7 dagarna")
+                        .font(.headline)
+
+                    Chart(weeklyData) { item in
+                        BarMark(
+                            x: .value("Dag", item.date, unit: .day),
+                            y: .value("Antal", item.count)
+                        )
+                    }
+                    .frame(height: 220)
+                }
+                .padding()
+                .background(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+                .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+                .padding(.horizontal)
+
+                Spacer()
+            }
+        }
+    }
+}
+
+struct StatCardView: View {
+    let title: String
+    let value: String
+    let systemImage: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.title3)
+                .foregroundStyle(.orange)
+                .frame(width: 32, height: 32)
+                .background(Color.orange.opacity(0.15))
+                .clipShape(Circle())
+
+            Text(title)
+                .font(.headline)
+
+            Spacer()
+
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(.secondary)
+        }
+        .padding()
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}

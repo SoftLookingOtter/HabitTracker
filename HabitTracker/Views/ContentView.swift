@@ -3,12 +3,14 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
 
     @Query(sort: \Habit.createdAt, order: .reverse)
     private var habits: [Habit]
 
     @State private var viewModel = HabitViewModel()
     @State private var showingAddHabit = false
+    @State private var currentDate = Date()
 
     var body: some View {
         NavigationStack {
@@ -56,8 +58,12 @@ struct ContentView: View {
                     } else {
                         List {
                             ForEach(habits) { habit in
-                                HabitRowView(habit: habit) {
+                                HabitRowView(
+                                    habit: habit,
+                                    currentDate: currentDate
+                                ) {
                                     viewModel.toggleToday(for: habit, context: context)
+                                    currentDate = Date()
                                 }
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.clear)
@@ -76,6 +82,14 @@ struct ContentView: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        StatisticsView(habits: habits)
+                    } label: {
+                        Image(systemName: "chart.bar.fill")
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showingAddHabit = true
@@ -98,6 +112,14 @@ struct ContentView: View {
                 Button("OK", role: .cancel) { }
             } message: { message in
                 Text(message)
+            }
+            .onAppear {
+                currentDate = Date()
+            }
+            .onChange(of: scenePhase) {
+                if scenePhase == .active {
+                    currentDate = Date()
+                }
             }
         }
     }

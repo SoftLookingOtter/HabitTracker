@@ -17,12 +17,16 @@ class Habit {
 }
 
 extension Habit {
-    var isCompletedToday: Bool {
+    func isCompleted(on date: Date) -> Bool {
         let calendar = Calendar.current
 
-        return completedDates.contains { date in
-            calendar.isDateInToday(date)
+        return completedDates.contains { completedDate in
+            calendar.isDate(completedDate, inSameDayAs: date)
         }
+    }
+
+    var isCompletedToday: Bool {
+        isCompleted(on: Date())
     }
 
     var currentStreak: Int {

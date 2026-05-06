@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HabitRowView: View {
     let habit: Habit
+    let currentDate: Date
     let onToggle: () -> Void
 
     var body: some View {
@@ -11,9 +12,9 @@ struct HabitRowView: View {
             }
         } label: {
             HStack(spacing: 14) {
-                Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
+                Image(systemName: habit.isCompleted(on: currentDate) ? "checkmark.circle.fill" : "circle")
                     .font(.title)
-                    .foregroundStyle(habit.isCompletedToday ? .green : .secondary)
+                    .foregroundStyle(habit.isCompleted(on: currentDate) ? .green : .secondary)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(habit.name)
@@ -36,7 +37,7 @@ struct HabitRowView: View {
                     )
                     .clipShape(Capsule())
                     .foregroundStyle(habit.currentStreak > 0 ? .orange : .secondary)
-                    .scaleEffect(habit.isCompletedToday ? 1.08 : 1.0)
+                    .scaleEffect(habit.isCompleted(on: currentDate) ? 1.08 : 1.0)
                     .shadow(
                         color: habit.currentStreak > 0 ? Color.orange.opacity(0.35) : Color.clear,
                         radius: habit.currentStreak > 0 ? 8 : 0,
