@@ -67,6 +67,14 @@ struct ContentView: View {
                                 }
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.clear)
+                                .listRowInsets(
+                                    EdgeInsets(
+                                        top: 4,
+                                        leading: 16,
+                                        bottom: 4,
+                                        trailing: 16
+                                    )
+                                )
                             }
                             .onDelete { indexSet in
                                 viewModel.deleteHabits(

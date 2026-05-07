@@ -5,47 +5,57 @@ struct HabitCompletionData: Identifiable {
     let id = UUID()
     let date: Date
     let habitName: String
-    let count: Int
+    let habitIndex: Int
 }
 
 struct StatisticsView: View {
     let habits: [Habit]
 
-    private var weeklyData: [HabitCompletionData] {
+    private let chartColors: [Color] = [
+        .blue, .green, .orange, .purple, .red, .cyan, .yellow, .mint, .pink, .indigo,
+        .teal, .brown, .gray, .black, .accentColor,
+        .orange.opacity(0.7), .green.opacity(0.7), .blue.opacity(0.7), .purple.opacity(0.7), .red.opacity(0.7),
+        .cyan.opacity(0.7), .mint.opacity(0.7), .indigo.opacity(0.7), .pink.opacity(0.7), .teal.opacity(0.7),
+        .brown.opacity(0.7), .gray.opacity(0.7),
+    ]
+
+    private var weekDays: [Date] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        return (0..<7).reversed().flatMap { offset in
-            guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else {
-                return [] as [HabitCompletionData]
-            }
+        return (0..<7).reversed().compactMap { offset in
+            calendar.date(byAdding: .day, value: -offset, to: today)
+        }
+    }
 
-            if habits.isEmpty {
-                return [
-                    HabitCompletionData(
-                        date: date,
-                        habitName: "Inga vanor",
-                        count: 0
-                    )
-                ]
-            }
+    private var chartHeight: CGFloat {
+        220
+    }
 
-            return habits.map { habit in
+    private var completedTimelineData: [HabitCompletionData] {
+        let calendar = Calendar.current
+
+        return weekDays.flatMap { date in
+            habits.enumerated().compactMap { index, habit in
                 let completedThatDay = habit.completedDates.contains { completedDate in
                     calendar.isDate(completedDate, inSameDayAs: date)
+                }
+
+                guard completedThatDay else {
+                    return nil
                 }
 
                 return HabitCompletionData(
                     date: date,
                     habitName: habit.name,
-                    count: completedThatDay ? 1 : 0
+                    habitIndex: index
                 )
             }
         }
     }
 
     private var hasChartData: Bool {
-        weeklyData.contains { $0.count > 0 }
+        !completedTimelineData.isEmpty
     }
 
     private var totalHabits: Int {
@@ -80,14 +90,14 @@ struct StatisticsView: View {
             .ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 16) {
                     Text("Statistik")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .frame(maxWidth: .infinity)
                         .padding(.top, 16)
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 8) {
                         StatCardView(
                             title: "Antal vanor",
                             value: "\(totalHabits)",
@@ -117,42 +127,67 @@ struct StatisticsView: View {
                     .padding(.horizontal)
 
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Vanor senaste 7 dagarna")
+                        Text("Utförda vanor senaste 7 dagarna")
                             .font(.headline)
 
                         if hasChartData {
-                            Chart(weeklyData) { item in
-                                BarMark(
-                                    x: .value("Dag", item.date, unit: .day),
-                                    y: .value("Antal", item.count)
-                                )
-                                .foregroundStyle(by: .value("Vana", item.habitName))
-                                .position(by: .value("Vana", item.habitName))
+                            Chart {
+                                ForEach(weekDays, id: \.self) { day in
+                                    RuleMark(x: .value("Dag", day, unit: .day))
+                                        .foregroundStyle(Color.gray.opacity(0.18))
+                                }
+
+                                ForEach(habits.indices, id: \.self) { index in
+                                    RuleMark(y: .value("Vana", index))
+                                        .foregroundStyle(Color.gray.opacity(0.15))
+                                }
+
+                                ForEach(completedTimelineData) { item in
+                                    PointMark(
+                                        x: .value("Dag", item.date, unit: .day),
+                                        y: .value("Vana", item.habitIndex)
+                                    )
+                                    .foregroundStyle(color(for: item.habitIndex))
+                                    .symbol(Circle())
+                                    .symbolSize(130)
+                                }
                             }
-                            .frame(height: 240)
+                            .frame(height: chartHeight)
+                            .chartYScale(domain: -0.5...Double(max(habits.count - 1, 0)) + 0.5)
                             .chartXAxis {
-                                AxisMarks(values: .stride(by: .day)) { _ in
+                                AxisMarks(values: weekDays) { _ in
                                     AxisGridLine()
                                     AxisTick()
                                     AxisValueLabel(format: .dateTime.weekday(.abbreviated))
                                 }
                             }
-                            .chartLegend(position: .bottom)
+                            .chartYAxis(.hidden)
+                            .chartLegend(.hidden)
+
+                            HabitLegendView(
+                                habits: habits,
+                                colors: chartColors
+                            )
+
+                            Text("Varje prick visar att en vana utfördes den dagen.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         } else {
-                            Chart(weeklyData) { item in
-                                BarMark(
-                                    x: .value("Dag", item.date, unit: .day),
-                                    y: .value("Antal", item.count)
-                                )
+                            Chart {
+                                ForEach(weekDays, id: \.self) { day in
+                                    RuleMark(x: .value("Dag", day, unit: .day))
+                                        .foregroundStyle(Color.gray.opacity(0.18))
+                                }
                             }
-                            .frame(height: 240)
+                            .frame(height: 180)
                             .chartXAxis {
-                                AxisMarks(values: .stride(by: .day)) { _ in
+                                AxisMarks(values: weekDays) { _ in
                                     AxisGridLine()
                                     AxisTick()
                                     AxisValueLabel(format: .dateTime.weekday(.abbreviated))
                                 }
                             }
+                            .chartYAxis(.hidden)
 
                             Text("Ingen historik ännu. Markera några vanor som utförda för att se statistik.")
                                 .font(.subheadline)
@@ -170,6 +205,38 @@ struct StatisticsView: View {
             }
         }
     }
+
+    private func color(for index: Int) -> Color {
+        chartColors[index % chartColors.count]
+    }
+}
+
+struct HabitLegendView: View {
+    let habits: [Habit]
+    let colors: [Color]
+
+    private let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
+    var body: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 6) {
+            ForEach(habits.indices, id: \.self) { index in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(colors[index % colors.count])
+                        .frame(width: 8, height: 8)
+
+                    Text(habits[index].name)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+        .padding(.top, 4)
+    }
 }
 
 struct StatCardView: View {
@@ -178,29 +245,30 @@ struct StatCardView: View {
     let systemImage: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: systemImage)
-                .font(.title3)
+                .font(.subheadline)
                 .foregroundStyle(.orange)
-                .frame(width: 32, height: 32)
+                .frame(width: 28, height: 28)
                 .background(Color.orange.opacity(0.15))
                 .clipShape(Circle())
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
 
                 Text(value)
-                    .font(.subheadline)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .lineLimit(1)
             }
 
             Spacer()
         }
-        .padding()
+        .padding(12)
         .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 }
