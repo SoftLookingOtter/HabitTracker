@@ -34,24 +34,38 @@ struct ContentView: View {
                         .padding(.top, 16)
 
                     if habits.isEmpty {
-                        VStack(spacing: 12) {
-                            Image(systemName: "leaf.fill")
-                                .font(.system(size: 48))
+                        VStack(spacing: 18) {
+                            Image(systemName: "leaf.circle.fill")
+                                .font(.system(size: 72))
                                 .foregroundStyle(.green)
 
-                            Text("Inga vanor än")
-                                .font(.headline)
+                            VStack(spacing: 8) {
+                                Text("Inga vanor än")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
 
-                            Text("Lägg till din första vana för att börja bygga en streak.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
+                                Text("Börja bygga bättre rutiner genom att lägga till din första vana.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
+
+                                Text("Tryck på + för att komma igång")
+                                    .font(.footnote)
+                                    .foregroundStyle(.green)
+                                    .padding(.top, 4)
+                            }
                         }
-                        .padding(24)
+                        .padding(32)
                         .frame(maxWidth: .infinity)
                         .background(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .clipShape(RoundedRectangle(cornerRadius: 28))
+                        .shadow(
+                            color: .black.opacity(0.06),
+                            radius: 10,
+                            x: 0,
+                            y: 4
+                        )
                         .padding(.horizontal)
 
                         Spacer()
@@ -67,14 +81,6 @@ struct ContentView: View {
                                 }
                                 .listRowSeparator(.hidden)
                                 .listRowBackground(Color.clear)
-                                .listRowInsets(
-                                    EdgeInsets(
-                                        top: 4,
-                                        leading: 16,
-                                        bottom: 4,
-                                        trailing: 16
-                                    )
-                                )
                             }
                             .onDelete { indexSet in
                                 viewModel.deleteHabits(
@@ -99,18 +105,10 @@ struct ContentView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack {
-                        NavigationLink {
-                            AboutView()
-                        } label: {
-                            Image(systemName: "info.circle")
-                        }
-
-                        Button {
-                            showingAddHabit = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
+                    Button {
+                        showingAddHabit = true
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
             }

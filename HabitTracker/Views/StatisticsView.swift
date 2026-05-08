@@ -189,9 +189,20 @@ struct StatisticsView: View {
                             }
                             .chartYAxis(.hidden)
 
-                            Text("Ingen historik ännu. Markera några vanor som utförda för att se statistik.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            VStack(spacing: 12) {
+                                Image(systemName: "chart.bar.xaxis")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.orange)
+
+                                Text("Ingen statistik ännu")
+                                    .font(.headline)
+
+                                Text("När du börjar markera vanor som utförda kommer statistik och grafer att visas här.")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.vertical, 24)
                         }
                     }
                     .padding()
