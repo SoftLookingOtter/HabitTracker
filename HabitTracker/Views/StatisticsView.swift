@@ -80,12 +80,12 @@ struct StatisticsView: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color.green.opacity(0.15),
-                    Color.orange.opacity(0.15),
-                    Color.clear
+                    Color(red: 1.00, green: 0.93, blue: 0.88),
+                    Color(red: 1.00, green: 0.88, blue: 0.82),
+                    Color(red: 0.98, green: 0.84, blue: 0.78)
                 ],
-                startPoint: .top,
-                endPoint: .bottom
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
 
