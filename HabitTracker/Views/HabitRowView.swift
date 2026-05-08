@@ -5,44 +5,110 @@ struct HabitRowView: View {
     let currentDate: Date
     let onToggle: () -> Void
 
+    @State private var animateCompletion = false
+
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.55)) {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.45)) {
                 onToggle()
+                animateCompletion = true
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    animateCompletion = false
+                }
             }
         } label: {
-            HStack(spacing: 10) {
-                Image(systemName: habit.isCompleted(on: currentDate) ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundStyle(habit.isCompleted(on: currentDate) ? .green : .secondary)
+            HStack(spacing: 14) {
 
-                VStack(alignment: .leading, spacing: 3) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            habit.isCompleted(on: currentDate)
+                            ? Color.green.opacity(animateCompletion ? 0.35 : 0)
+                            : Color.clear
+                        )
+                        .frame(width: 52, height: 52)
+                        .blur(radius: animateCompletion ? 12 : 0)
+                        .scaleEffect(animateCompletion ? 1.4 : 0.8)
+
+                    Image(systemName:
+                            habit.isCompleted(on: currentDate)
+                          ? "checkmark.circle.fill"
+                          : "circle"
+                    )
+                    .font(.system(size: 30))
+                    .foregroundStyle(
+                        habit.isCompleted(on: currentDate)
+                        ? .green
+                        : .secondary
+                    )
+                    .scaleEffect(
+                        animateCompletion &&
+                        habit.isCompleted(on: currentDate)
+                        ? 1.35
+                        : 1.0
+                    )
+                    .symbolEffect(
+                        .bounce,
+                        value: animateCompletion
+                    )
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
                     Text(habit.name)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .font(.headline)
 
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
-                            .font(.caption2)
+                            .font(.caption)
 
                         Text("\(habit.currentStreak)")
-                            .font(.caption2)
+                            .font(.caption)
                             .fontWeight(.semibold)
                     }
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 2)
-                    .background(Color.orange.opacity(0.16))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        habit.currentStreak > 0
+                        ? Color.orange.opacity(0.2)
+                        : Color.gray.opacity(0.1)
+                    )
                     .clipShape(Capsule())
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(
+                        habit.currentStreak > 0
+                        ? .orange
+                        : .secondary
+                    )
+                    .scaleEffect(
+                        animateCompletion &&
+                        habit.isCompleted(on: currentDate)
+                        ? 1.15
+                        : 1.0
+                    )
+                    .shadow(
+                        color: habit.currentStreak > 0 && animateCompletion
+                        ? Color.orange.opacity(0.7)
+                        : .clear,
+                        radius: animateCompletion ? 16 : 0
+                    )
                 }
 
                 Spacer()
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 9)
+            .padding()
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.035), radius: 3, x: 0, y: 1)
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .shadow(
+                color: .black.opacity(0.05),
+                radius: 5,
+                x: 0,
+                y: 2
+            )
+            .scaleEffect(
+                animateCompletion ? 1.02 : 1.0
+            )
         }
         .buttonStyle(.plain)
     }
