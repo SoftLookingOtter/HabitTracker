@@ -105,10 +105,18 @@ struct ContentView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddHabit = true
-                    } label: {
-                        Image(systemName: "plus")
+                    HStack {
+                        NavigationLink {
+                            AboutView()
+                        } label: {
+                            Image(systemName: "info.circle")
+                        }
+
+                        Button {
+                            showingAddHabit = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }
