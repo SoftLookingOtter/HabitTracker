@@ -4,8 +4,6 @@ A modern SwiftUI habit tracking app built as a final project for iOS development
 
 The app helps users create daily habits, mark them as completed, and stay motivated by tracking streaks and weekly progress.
 
----
-
 ## Features
 
 - Create new habits
@@ -15,11 +13,9 @@ The app helps users create daily habits, mark them as completed, and stay motiva
 - Local data persistence using SwiftData
 - Error handling with alerts
 - Statistics screen with SwiftUI Charts
-- Weekly completion timeline with color-coded habits
+- Weekly completion chart with color-coded habits
 - About screen with project information
 - Modern card-based UI inspired by Apple Health
-
----
 
 ## Built With
 
@@ -29,8 +25,6 @@ The app helps users create daily habits, mark them as completed, and stay motiva
 - SwiftUI Charts
 - Observation Framework (`@Observable` / `@Bindable`)
 - SF Symbols
-
----
 
 ## Project Structure
 
@@ -53,8 +47,6 @@ HabitTracker
 └── HabitTrackerApp.swift
 ```
 
----
-
 ## Functionality
 
 ### Habits
@@ -74,23 +66,21 @@ The statistics screen displays:
 - Total completions
 - Best current streak
 - Top habit based on streak
-- A weekly completion timeline using SwiftUI Charts
+- A weekly completion chart using SwiftUI Charts
 
-Each colored dot in the timeline represents a completed habit on a specific day.
+Each colored mark in the chart represents a completed habit on a specific day.
 
-### Persistence
+## Persistence
 
 The app uses SwiftData for local persistence.
 
 All habits and completion dates remain saved even after the app is closed.
 
-### Error Handling
+## Error Handling
 
 The app validates user input before saving.
 
-If the user tries to save an invalid habit or if a database operation fails, the app shows a clear error message instead of crashing.
-
----
+The app prevents users from saving habits without a valid name. If a database operation fails, the app shows a clear error message instead of crashing.
 
 ## Architecture
 
@@ -102,13 +92,9 @@ The app follows the MVVM pattern:
 
 This creates a cleaner and more maintainable structure.
 
----
-
 ## VG Track
 
 For the advanced functionality requirement, the app uses SwiftUI Charts to visualize habit history over the latest seven days.
-
----
 
 ## Future Improvements
 
@@ -120,8 +106,6 @@ Possible future features include:
 - Monthly statistics
 - Dark mode customization
 - Widgets and lock screen support
-
----
 
 ## Author
 
