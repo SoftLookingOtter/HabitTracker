@@ -80,7 +80,7 @@ All habits and completion dates remain saved even after the app is closed.
 
 The app validates user input before saving.
 
-If the user tries to save an invalid habit or if a database operation fails, the app shows a clear error message instead of crashing.
+The app prevents users from saving habits without a valid name. If a database operation fails, the app shows a clear error message instead of crashing.
 
 ## Architecture
 
